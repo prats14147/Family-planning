@@ -19,6 +19,9 @@ def chat():
 @app.route('/get_response', methods=['POST'])
 def get_response():
     data = request.json
+    if not data:
+        return jsonify({'response': 'Invalid request.', 'source': 'system'})
+    
     user_message = data.get('message', '').lower().strip()
     language = data.get('language', 'english').lower()
     
@@ -31,7 +34,10 @@ def get_response():
     response = None
     source = 'static'
     
-    if any(keyword in user_message for keyword in ['latest', 'recent', 'update', 'new', 'current']):
+    english_keywords = ['latest', 'recent', 'update', 'new', 'current']
+    nepali_keywords = ['नवीनतम', 'हालै', 'ताजा', 'नयाँ', 'हालको']
+    
+    if any(keyword in user_message for keyword in english_keywords + nepali_keywords):
         live_data = fetch_live_health_data(user_message, language)
         if live_data:
             response = live_data
@@ -57,27 +63,30 @@ def get_response():
 
 def fetch_live_health_data(query, language):
     try:
-        api_url = "https://api.api-ninjas.com/v1/healthnews"
-        headers = {'X-Api-Key': 'demo'}
+        api_url = "https://health.gov/myhealthfinder/api/v3/topicsearch.json?lang=en"
         
-        response = requests.get(api_url, headers=headers, timeout=5)
+        response = requests.get(api_url, timeout=5)
         
         if response.status_code == 200:
             data = response.json()
             
-            if data and isinstance(data, list) and len(data) > 0:
-                article = data[0]
-                title = article.get('title', 'No title')
-                description = article.get('description', 'No description available')
-                
-                if language == 'english':
-                    return f"Latest Health Information: {title}. {description} (From live data source)"
-                else:
-                    return f"नवीनतम स्वास्थ्य जानकारी: {title}. {description} (प्रत्यक्ष डेटा स्रोतबाट)"
+            if data and 'Result' in data and 'Resources' in data['Result']:
+                resources = data['Result']['Resources'].get('Resource', [])
+                if resources and len(resources) > 0:
+                    resource = resources[0]
+                    title = resource.get('Title', 'Health Information')
+                    
+                    if language == 'english':
+                        return f"Latest Health Information: {title}. For the most current family planning information, visit WHO (www.who.int) or your local health department. (From live data source)"
+                    else:
+                        return f"नवीनतम स्वास्थ्य जानकारी: {title}. नवीनतम परिवार नियोजन जानकारीको लागि WHO (www.who.int) वा आफ्नो स्थानीय स्वास्थ्य विभाग भ्रमण गर्नुहोस्। (प्रत्यक्ष डेटा स्रोतबाट)"
     except Exception as e:
         print(f"API Error: {e}")
     
-    return None
+    if language == 'english':
+        return "For the latest family planning information and updates, please visit the World Health Organization (WHO) at www.who.int or contact your local health department. (Recommended resources)"
+    else:
+        return "नवीनतम परिवार नियोजन जानकारी र अद्यावधिकका लागि, कृपया विश्व स्वास्थ्य संगठन (WHO) www.who.int मा जानुहोस् वा आफ्नो स्थानीय स्वास्थ्य विभागलाई सम्पर्क गर्नुहोस्। (सिफारिस गरिएका स्रोतहरू)"
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
