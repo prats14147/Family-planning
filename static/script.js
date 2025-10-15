@@ -47,20 +47,41 @@ function addMessage(message, isUser = false) {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
+// "Bot is typing..." indicator
+function showTypingIndicator() {
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'message bot-message typing-indicator';
+    typingDiv.innerHTML = `
+        <div class="message-avatar">
+            <i class="fas fa-robot"></i>
+        </div>
+        <div class="message-content">
+            <p><em>Bot is typing<span class="dots">...</span></em></p>
+        </div>
+    `;
+    chatMessages.appendChild(typingDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function removeTypingIndicator() {
+    const typingDiv = document.querySelector('.typing-indicator');
+    if (typingDiv) typingDiv.remove();
+}
+
 async function sendMessage() {
     const message = userInput.value.trim();
-    
     if (!message) return;
     
     addMessage(message, true);
     userInput.value = '';
+
+    // Show "Bot is typing…" while waiting for response
+    showTypingIndicator();
     
     try {
         const response = await fetch('/get_response', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 message: message,
                 language: currentLanguage
@@ -68,9 +89,11 @@ async function sendMessage() {
         });
         
         const data = await response.json();
-        
+
+        removeTypingIndicator();
         addMessage(data.response, false);
     } catch (error) {
+        removeTypingIndicator();
         const errorMessage = currentLanguage === 'english' 
             ? "Sorry, I'm having trouble connecting. Please try again."
             : "माफ गर्नुहोस्, मलाई जडान गर्न समस्या भइरहेको छ। कृपया फेरि प्रयास गर्नुहोस्।";
@@ -79,7 +102,6 @@ async function sendMessage() {
 }
 
 sendBtn.addEventListener('click', sendMessage);
-
 userInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         sendMessage();
