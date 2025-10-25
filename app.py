@@ -4,6 +4,23 @@ import json
 
 app = Flask(__name__)
 
+SYSTEM_PROMPT = """
+You are FamilyCare — an expert AI assistant specializing in family planning,
+reproductive health, and contraceptive methods.
+
+Your job is to answer user questions clearly, kindly, and accurately.
+
+Rules:
+•⁠  ⁠Focus only on family planning, contraception, sexual and reproductive health.
+•⁠  ⁠If a question is off-topic, politely say it’s outside your scope.
+•⁠  ⁠Use short, friendly sentences.
+
+
+Example:
+User: What is an IUD?
+Answer: An intrauterine device (IUD) is a small, T-shaped contraceptive inserted into the uterus to prevent pregnancy.
+"""
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -17,16 +34,19 @@ def get_response():
     data = request.json
     if not data or 'message' not in data:
         return jsonify({'response': 'Invalid request.', 'source': 'system'})
-    
+
     user_message = data.get('message', '').strip()
     if not user_message:
         return jsonify({'response': 'Please enter a message.', 'source': 'system'})
 
     try:
+        # Combine system prompt and user message for context
+        full_prompt = f"{SYSTEM_PROMPT}\n\nUser: {user_message}\nAssistant:"
+
         # 🔹 Send message to Ollama (running locally)
         response = requests.post(
             "http://localhost:11434/api/generate",
-            json={"model": "mistral", "prompt": user_message, "max_tokens": 300},
+            json={"model": "mistral", "prompt": full_prompt, "max_tokens": 300},
             stream=True
         )
 
