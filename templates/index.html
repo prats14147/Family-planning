@@ -25,8 +25,13 @@
                 </ul>
             </div>
             <div class="nav-right">
-                <button class="btn-auth">Sign Up</button>
-                <button class="btn-auth btn-login">Login</button>
+<!-- fixing -->
+                <!-- <button class="btn-auth">Sign Up</button>
+                <button class="btn-auth btn-login">Login</button> -->
+
+                <button onclick="window.location.href='/login'" class="btn-auth btn-login">Login</button>
+                <button onclick="window.location.href='/signup'" class="btn-auth">Sign Up</button>
+
             </div>
         </div>
     </nav>
@@ -39,7 +44,7 @@
                 </div>
             </div>
             <div class="hero-content">
-                <h1>Family Planning Chatbot</h1>
+                <h1>Family Planning Assistant</h1>
                 <p>Where technology meets expert guidance for your family planning needs.</p>
                 <a href="/chat" class="btn-chatbot">
                     <span>Try Chatbot</span>

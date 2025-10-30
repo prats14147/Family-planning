@@ -493,6 +493,67 @@ body {
   animation: dots 1.5s steps(3, end) infinite;
 }
 
+
+/* sign up and login */
+
+.auth-container {
+  width: 400px;
+  margin: 100px auto;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(255, 107, 129, 0.2);
+  padding: 30px 40px;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+}
+
+.auth-container h2 {
+  color: #ff6b81;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.auth-container input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 15px;
+  outline: none;
+}
+
+.auth-container button {
+  width: 100%;
+  padding: 12px;
+  background-color: #ff6b81;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.auth-container button:hover {
+  background-color: #ff4757;
+}
+
+.auth-container p {
+  margin-top: 15px;
+  color: #444;
+}
+
+.auth-container .error {
+  color: red;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+
+/* signup and login end */
+
 @keyframes dots {
   0%, 20% { content: ''; }
   40% { content: '.'; }

@@ -38,7 +38,8 @@ function addMessage(message, isUser = false) {
     
     const content = document.createElement('div');
     content.className = 'message-content';
-    content.innerHTML = `<p>${message}</p>`;
+    // content.innerHTML = `<p>${message}</p>`;
+    content.innerHTML = message.replace(/\n/g, '<br>');
     
     messageDiv.appendChild(avatar);
     messageDiv.appendChild(content);
